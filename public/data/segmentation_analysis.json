@@ -1,62 +1,44 @@
 {
   "Global": {
-    "By Type": {
-      "Sub-Normothermic Perfusion (20–34°C)": {},
-      "Warm or Normothermic Perfusion (35–37°C)": {}
+    "By Product Type": {
+      "Ticket-inclusive Hospitality Packages": {},
+      "Ticket-inclusive Travel Packages": {},
+      "Hybrid Hospitality & Travel Packages": {}
     },
-    "By Organ Type": {
-      "Liver": {},
-      "Heart": {},
-      "Lung": {},
-      "Kidney": {},
-      "Others (Pancreas, Small bowel / Intestine, Composite Tissues / Limb Perfusion (emerging use cases))": {}
+    "By Customer Type": {
+      "Corporate": {},
+      "Consumer": {},
+      "Group Travel": {},
+      "VIP / Luxury Buyers": {}
     },
-    "Application / Use Case": {
-      "Organ Preservation": {},
-      "Viability Assessment": {},
-      "Physiologic Transport": {},
-      "Reconditioning Marginal Organs": {},
-      "Others (Research Use / Protocol development)": {}
+    "By Event Category": {
+      "Single-event Packages": {},
+      "Multi-event Packages": {},
+      "Single-day Experiences": {},
+      "Multi-day / Itinerary-based Experiences": {},
+      "Hosted / Escorted Experiences": {},
+      "Self-guided Experiences": {}
     },
-    "By End User": {
-      "Hospitals & Clinics": {},
-      "Specialty Clinic/Centers": {},
-      "Transplant Centers": {},
-      "Others (Research Institutes/Centers, Organ Procurement Organizations, etc.)": {}
+    "By Vertical (Booking Channel)": {
+      "Official Rights-holder Channels": {},
+      "Official Hospitality Partners": {},
+      "Official Travel Partners": {},
+      "Specialist Sports Tour Operators": {},
+      "Travel Agencies / Premium Agencies": {},
+      "Direct-to-Consumer Online Platforms": {}
+    },
+    "By Sports Property / Event Type": {
+      "Major League Sports": {},
+      "College Sports": {},
+      "Global Mega-events": {},
+      "Motorsport": {},
+      "Golf / Tennis / Individual Sports": {},
+      "Combat Sports / Special Events": {}
     },
     "By Region": {
       "North America": {
         "U.S.": {},
         "Canada": {}
-      },
-      "Europe": {
-        "U.K.": {},
-        "Germany": {},
-        "Italy": {},
-        "France": {},
-        "Spain": {},
-        "Russia": {},
-        "Rest of Europe": {}
-      },
-      "Asia Pacific": {
-        "China": {},
-        "India": {},
-        "Japan": {},
-        "South Korea": {},
-        "ASEAN": {},
-        "Australia": {},
-        "Rest of Asia Pacific": {}
-      },
-      "Latin America": {
-        "Brazil": {},
-        "Argentina": {},
-        "Mexico": {},
-        "Rest of Latin America": {}
-      },
-      "Middle East & Africa": {
-        "GCC": {},
-        "South Africa": {},
-        "Rest of Middle East & Africa": {}
       }
     }
   }
