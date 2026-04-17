@@ -327,12 +327,6 @@ export function D3BubbleChartIndependent({ title, height = 500 }: BubbleChartPro
     }
   }, [activeFilters.businessType, selectedSegmentType, hasB2BSegmentation, isOpportunityMode, selectedSegments.length, updateActiveFilters])
 
-  // When switching data type (value/volume), keep the current segment type
-  // All segment types are supported for both value and volume data
-  useEffect(() => {
-    // No need to reset segment type - allow all segment types for both value and volume
-  }, [activeFilters.dataType, activeFilters.segmentType, isOpportunityMode])
-  
   // Handle cascade filter selection (opportunity mode)
   const handleCascadeSelection = (path: string[]) => {
     setCascadePath(path)
@@ -1570,7 +1564,6 @@ export function D3BubbleChartIndependent({ title, height = 500 }: BubbleChartPro
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-black"
             >
               {data?.dimensions?.segments ? Object.keys(data.dimensions.segments)
-                // Show all segment types for both value and volume data
                 .map(option => (
                 <option key={option} value={option}>
                   {option}
@@ -1580,37 +1573,17 @@ export function D3BubbleChartIndependent({ title, height = 500 }: BubbleChartPro
           </div>
         </div>
         
-        {/* Data Type - Only for opportunity mode */}
         {isOpportunityMode && (
           <div>
             <label className="block text-sm font-medium text-black mb-2">
               Data Type
             </label>
-            <div className="flex gap-2">
-              <button
-                onClick={() => updateActiveFilters({ dataType: 'value' })}
-                className={`flex-1 px-3 py-2 text-sm rounded-md transition-colors ${
-                  activeFilters.dataType === 'value'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-black hover:bg-gray-200'
-                }`}
-              >
-                Value
-              </button>
-              <button
-                onClick={() => updateActiveFilters({ dataType: 'volume' })}
-                className={`flex-1 px-3 py-2 text-sm rounded-md transition-colors ${
-                  activeFilters.dataType === 'volume'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-black hover:bg-gray-200'
-                }`}
-              >
-                Volume
-              </button>
+            <div className="rounded-md bg-blue-600 px-3 py-2 text-center text-sm font-medium text-white">
+              Value
             </div>
           </div>
         )}
-        
+
         {/* Business Type Filter - Only for opportunity mode with B2B/B2C segmentation */}
         {isOpportunityMode && hasB2BSegmentation && (
           <div>
