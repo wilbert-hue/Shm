@@ -4,9 +4,38 @@ const path = require('path');
 // Years: 2021-2033
 const years = [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033];
 
-// North America only
+// North America hierarchy: region -> country -> metropolitan areas
 const regions = {
   'North America': ['U.S.', 'Canada'],
+};
+
+const CITIES_BY_COUNTRY = {
+  'U.S.': [
+    'New York City',
+    'Los Angeles',
+    'Chicago',
+    'Dallas-Fort Worth',
+    'Houston',
+    'Miami',
+    'Philadelphia',
+    'Atlanta',
+    'San Francisco',
+    'Boston',
+    'Rest of U.S. Metropolitan Areas',
+  ],
+  Canada: [
+    'Toronto',
+    'Vancouver',
+    'Montreal',
+    'Calgary',
+    'Ottawa',
+    'Edmonton',
+    'Quebec City',
+    'Winnipeg',
+    'Hamilton',
+    'Kitchener-Waterloo',
+    'Rest of Canadian Metropolitan Areas',
+  ],
 };
 
 const regionBaseValues = {
@@ -21,10 +50,6 @@ const regionGrowthRates = {
   'North America': 0.118,
 };
 
-/**
- * Top-level segment types (replaces By Type / By Organ Type / Application / By End User).
- * Each type: leaf segment -> share of regional base (sums to 1 per type).
- */
 const segmentTypesFlat = {
   'By Product Type': {
     'Ticket-inclusive Hospitality Packages': 1 / 3,
@@ -107,6 +132,16 @@ function buildFlatEmptyTree(shares) {
   return out;
 }
 
+function nestedCitiesEmpty(countryKey) {
+  const list = CITIES_BY_COUNTRY[countryKey];
+  if (!list) return {};
+  const o = {};
+  list.forEach((c) => {
+    o[c] = {};
+  });
+  return o;
+}
+
 function writeFlatSegmentData(target, segType, shares, regionBase, regionGrowth, roundFn, multiplier) {
   if (!target[segType]) target[segType] = {};
   for (const [leaf, share] of Object.entries(shares)) {
@@ -147,8 +182,22 @@ function generateGeoBundle(isVolume) {
       data[regionName]['By Country'][country] = generateTimeSeries(
         regionBase * cShare,
         countryGrowth2,
-        roundFn
+        roundFn,
       );
+
+      const metroList = CITIES_BY_COUNTRY[country];
+      if (metroList && metroList.length > 0) {
+        const n = metroList.length;
+        metroList.forEach((cityName) => {
+          const cityVariation = 1 + (seededRandom() - 0.5) * 0.08;
+          const cityBase = (countryBase * cityVariation) / n;
+          const cityGrowth = countryGrowth * (0.98 + (seededRandom() - 0.5) * 0.04);
+          data[cityName] = {};
+          for (const [segType, shares] of Object.entries(segmentTypesFlat)) {
+            writeFlatSegmentData(data[cityName], segType, shares, cityBase, cityGrowth, roundFn, multiplier);
+          }
+        });
+      }
     }
   }
 
@@ -166,8 +215,8 @@ function buildSegmentationAnalysis() {
 
   analysis.Global['By Region'] = {
     'North America': {
-      'U.S.': {},
-      Canada: {},
+      'U.S.': nestedCitiesEmpty('U.S.'),
+      Canada: nestedCitiesEmpty('Canada'),
     },
   };
 
@@ -187,6 +236,6 @@ fs.writeFileSync(path.join(outDir, 'segmentation_analysis.json'), JSON.stringify
 
 const firstType = Object.keys(segmentTypesFlat)[0];
 console.log('Generated value.json, volume.json, segmentation_analysis.json');
-console.log('Geographies:', Object.keys(valueData));
+console.log('Top-level geo keys count:', Object.keys(valueData).length);
 console.log('Segment types:', Object.keys(segmentTypesFlat));
-console.log(`Sample North America "${firstType}":`, JSON.stringify(valueData['North America'][firstType], null, 2).slice(0, 600));
+console.log(`Sample city "${CITIES_BY_COUNTRY['U.S.'][0]}" "${firstType}":`, JSON.stringify(valueData[CITIES_BY_COUNTRY['U.S.'][0]][firstType], null, 2).slice(0, 400));

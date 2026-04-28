@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { useDashboardStore } from '@/lib/store'
 import { BusinessTypeFilter } from './BusinessTypeFilter'
 import { X, Plus } from 'lucide-react'
@@ -263,7 +263,15 @@ export function CompactFilterPanel() {
             <optgroup key={region} label={region}>
               <option value={region}>{region}</option>
               {data.dimensions.geographies.countries[region]?.map(country => (
-                <option key={country} value={country}>  {country}</option>
+                <Fragment key={country}>
+                  <option value={country}>  {country}</option>
+                  {(data.dimensions.geographies.cities?.[country] ?? []).map((city) => (
+                    <option key={`${country}-${city}`} value={city}>
+                      {'    '}
+                      {city}
+                    </option>
+                  ))}
+                </Fragment>
               ))}
             </optgroup>
           ))}

@@ -37,8 +37,32 @@
     },
     "By Region": {
       "North America": {
-        "U.S.": {},
-        "Canada": {}
+        "U.S.": {
+          "New York City": {},
+          "Los Angeles": {},
+          "Chicago": {},
+          "Dallas-Fort Worth": {},
+          "Houston": {},
+          "Miami": {},
+          "Philadelphia": {},
+          "Atlanta": {},
+          "San Francisco": {},
+          "Boston": {},
+          "Rest of U.S. Metropolitan Areas": {}
+        },
+        "Canada": {
+          "Toronto": {},
+          "Vancouver": {},
+          "Montreal": {},
+          "Calgary": {},
+          "Ottawa": {},
+          "Edmonton": {},
+          "Quebec City": {},
+          "Winnipeg": {},
+          "Hamilton": {},
+          "Kitchener-Waterloo": {},
+          "Rest of Canadian Metropolitan Areas": {}
+        }
       }
     }
   }

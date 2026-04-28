@@ -1270,7 +1270,9 @@ export async function processJsonDataAsync(
     // This builds a full geography hierarchy: Global > Regions > Countries
     const regionGeographies: string[] = []
     const regionToCountries: Record<string, string[]> = {}
+    const countryToCities: Record<string, string[]> = {}
     const allCountries: string[] = []
+    const allCityNames: string[] = []
     for (const topGeo of geographies) {
       const geoData = structureData[topGeo]
       if (geoData && typeof geoData === 'object') {
@@ -1298,6 +1300,33 @@ export async function processJsonDataAsync(
                   if (!allCountries.includes(country)) {
                     allCountries.push(country)
                   }
+                  const countryNode = regionData[country]
+                  const subKeys =
+                    countryNode && typeof countryNode === 'object' && !Array.isArray(countryNode)
+                      ? Object.keys(countryNode).filter(
+                          sk =>
+                            sk !== region &&
+                            sk !== country &&
+                            typeof (countryNode as Record<string, unknown>)[sk] === 'object' &&
+                            !Array.isArray((countryNode as Record<string, unknown>)[sk]),
+                        )
+                      : []
+                  // Third level: metropolitan areas (segmentation leaf is empty `{}` per geo)
+                  const metroAreas = subKeys.filter(sk => {
+                    const leaf = (countryNode as Record<string, unknown>)[sk]
+                    return leaf && typeof leaf === 'object' && !Array.isArray(leaf)
+                  })
+                  const areMetro =
+                    metroAreas.length > 0 &&
+                    metroAreas.every(sk => Object.keys(((countryNode as Record<string, unknown>)[sk] as object) || {}).length === 0)
+                  if (areMetro) {
+                    countryToCities[country] = metroAreas
+                    metroAreas.forEach(c => {
+                      if (!allCityNames.includes(c)) {
+                        allCityNames.push(c)
+                      }
+                    })
+                  }
                 })
               }
             }
@@ -1314,6 +1343,10 @@ export async function processJsonDataAsync(
     if (allCountries.length > 0) {
       console.log(`Found ${allCountries.length} countries from "By Region":`, allCountries)
       geographies = [...geographies, ...allCountries]
+    }
+    if (allCityNames.length > 0) {
+      console.log(`Found ${allCityNames.length} metropolitan areas from "By Region":`, allCityNames)
+      geographies = [...geographies, ...allCityNames]
     }
 
     console.log(`Found ${geographies.length} total geographies:`, geographies)
@@ -1353,23 +1386,28 @@ export async function processJsonDataAsync(
     // Remove geographies from the list if they have no value/volume data
     // But keep them if they are regions or countries (which get data from "By Region" processing)
     const filteredGeographies = geographies.filter(g => {
-      // Always keep regions and countries (they have data under parent geographies)
-      if (regionGeographies.includes(g) || allCountries.includes(g)) return true
+      // Always keep regions, countries, and known metro-level geographies from structure
+      if (regionGeographies.includes(g) || allCountries.includes(g) || allCityNames.includes(g)) return true
       // For top-level geographies (like "Global"), only keep if they have actual data
       return geographiesWithData.has(g)
     })
 
     // Build geography dimension with full hierarchy
     const geographyDimension: GeographyDimension = {
-      global: filteredGeographies.filter(g => !regionGeographies.includes(g) && !allCountries.includes(g)),
+      global: filteredGeographies.filter(
+        g => !regionGeographies.includes(g) && !allCountries.includes(g) && !allCityNames.includes(g),
+      ),
       regions: regionGeographies,
       countries: regionToCountries,
-      all_geographies: filteredGeographies
+      cities:
+        Object.keys(countryToCities).length > 0 ? { ...countryToCities } : undefined,
+      all_geographies: filteredGeographies,
     }
 
     console.log(`Geography dimension built with ${geographies.length} geographies:`, geographies)
     console.log(`Regions:`, regionGeographies)
     console.log(`Countries by region:`, regionToCountries)
+    console.log(`Cities by country:`, countryToCities)
     
     // Process each segment type asynchronously
     const segments: Record<string, SegmentDimension> = {}
